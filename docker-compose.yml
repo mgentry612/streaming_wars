@@ -1,0 +1,30 @@
+version: '3.7'
+services:
+     streamingwars_db:
+         image: postgres:13.3
+         environment:
+             - POSTGRES_USER=postgres
+             - POSTGRES_PASSWORD=postgres
+         ports:
+             - '5432:5432'
+         volumes:
+             - ./db/db_setup/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+             - ./db/db_setup/create_users.sql:/docker-entrypoint-initdb.d/create_users.sql
+     streamingwars_api:
+         build: './api/'
+         ports:
+             - '8080:8080'
+         depends_on:
+             - streamingwars_db
+             - redis
+     streamingwars_ui:
+         build: './ui/'
+         ports:
+             - '80:80'
+         depends_on:
+             - streamingwars_api
+     redis:
+         image: "redis:alpine"
+         ports:
+             - '6379:6379'
+             
